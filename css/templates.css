@@ -1,0 +1,248 @@
+/* ===========================================================
+   ATZ Invoice Generator — 5 DISTINCT invoice layouts
+     blue      → Classic split header
+     maroon    → Centered letterhead (serif, mostly white)
+     corporate → Left navy sidebar (two-column page)
+     minimal   → Airy modern, no color fills
+     elegant   → Framed, decorative serif
+   =========================================================== */
+
+/* ---------- Shared canvas (US-Letter ratio) ---------- */
+.invoice {
+  --ink: #1f2733;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --pri: #1d4ed8;
+  --pri-ink: #ffffff;
+  --font: 'Inter', system-ui, sans-serif;
+  --head-font: 'Inter', system-ui, sans-serif;
+  width: 816px;
+  min-height: 1056px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: var(--shadow-md);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+.invoice * { box-sizing: border-box; }
+.inv-pad { padding: 48px 52px; flex: 1; display: flex; flex-direction: column; }
+
+/* ---------- Shared primitives ---------- */
+.inv-logo { height: 52px; width: auto; object-fit: contain; }
+.inv-company { font-size: 20px; font-weight: 800; margin: 0; font-family: var(--head-font); }
+.inv-tagline { font-size: 11px; color: var(--muted); margin: 4px 0 0; font-style: italic; }
+.inv-from-lines { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.65; }
+.inv-title { font-size: 34px; font-weight: 800; letter-spacing: 1px; margin: 0; text-transform: uppercase; font-family: var(--head-font); color: var(--pri); }
+
+.inv-meta {
+  font-size: 12.5px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 180px);
+  gap: 3px 14px;
+  justify-content: end;
+  align-items: baseline;
+}
+.inv-meta .k { color: var(--muted); white-space: nowrap; text-align: right; }
+.inv-meta .v { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+
+.inv-party h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--pri); margin: 0 0 8px; font-weight: 700; }
+.inv-party .name { font-weight: 700; font-size: 15px; }
+.inv-party .name.big { font-size: 22px; }
+.inv-party .lines { font-size: 12.5px; color: #4b5563; line-height: 1.65; margin-top: 4px; }
+
+.inv-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+.inv-table thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; padding: 11px 12px; background: var(--pri); color: var(--pri-ink); font-weight: 700; }
+.inv-table thead th.num { text-align: right; }
+.inv-table tbody td { padding: 12px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+.inv-table tbody td.num { text-align: right; white-space: nowrap; }
+.inv-table tbody tr:nth-child(even) td { background: #fafbfc; }
+.inv-item-name { font-weight: 600; }
+.inv-item-desc { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.inv-empty { color: #9ca3af; padding: 20px; }
+
+.inv-summary { display: flex; justify-content: space-between; gap: 40px; margin-top: 26px; }
+.inv-notes { flex: 1; font-size: 12.5px; color: #4b5563; }
+.inv-notes h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 6px; }
+.inv-notes p { margin: 0 0 12px; white-space: pre-wrap; }
+.inv-thanks { font-size: 13px; font-weight: 600; color: var(--ink); }
+.inv-totals { width: 290px; flex-shrink: 0; }
+.inv-totals .row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 13.5px; }
+.inv-totals .row span:first-child { color: var(--muted); }
+.inv-totals .grand { margin-top: 8px; padding: 13px 16px; background: var(--pri); color: var(--pri-ink); border-radius: 8px; font-size: 17px; font-weight: 800; display: flex; justify-content: space-between; }
+
+.inv-footer { margin-top: auto; padding: 22px 52px; border-top: 2px solid var(--pri); font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.inv-footer strong { color: var(--ink); }
+
+/* Signature (shared) */
+.inv-sign { text-align: center; }
+.sig-img { max-height: 58px; max-width: 210px; display: block; margin: 0 auto 2px; object-fit: contain; }
+.sig-line { width: 180px; border-top: 1px solid #9aa3af; margin: 0 auto 6px; }
+.sig-name { font-weight: 700; font-size: 13px; }
+.sig-sub { font-size: 11px; color: var(--muted); }
+.inv-signrow { display: flex; justify-content: flex-end; margin-top: 30px; }
+
+/* ============================================================
+   1) BLUE — Classic split header
+   ============================================================ */
+.tpl-blue { --pri: #1d4ed8; }
+.tpl-blue .inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+.tpl-blue .inv-brand { display: flex; gap: 16px; align-items: flex-start; }
+.tpl-blue .inv-title-block { text-align: right; }
+.tpl-blue .inv-title-block .inv-meta { margin-top: 12px; }
+.tpl-blue .inv-parties { display: flex; gap: 40px; margin-top: 34px; }
+.tpl-blue .inv-party { flex: 1; }
+.tpl-blue .inv-party--right { text-align: right; }
+
+/* ============================================================
+   2) MAROON — Centered letterhead (serif, mostly white)
+   ============================================================ */
+.tpl-maroon {
+  --pri: #7a1f2b;
+  --font: 'Source Serif 4', Georgia, serif;
+  --head-font: 'Source Serif 4', Georgia, serif;
+}
+.tpl-maroon .ml-head { text-align: center; padding-bottom: 18px; border-bottom: 1.5px solid var(--pri); }
+.tpl-maroon .ml-logo { height: 56px; margin: 0 auto 10px; display: block; }
+.tpl-maroon .inv-company { color: var(--pri); font-size: 26px; font-weight: 700; }
+.tpl-maroon .inv-tagline { margin-top: 6px; }
+.tpl-maroon .ml-contact { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.tpl-maroon .ml-title { text-align: center; letter-spacing: 8px; text-transform: uppercase; color: var(--pri); font-size: 15px; font-weight: 700; margin: 22px 0 4px; }
+.tpl-maroon .ml-info { display: flex; justify-content: space-between; gap: 40px; margin-top: 16px; }
+.tpl-maroon .ml-meta { justify-content: start; grid-template-columns: max-content minmax(0, 200px); }
+.tpl-maroon .ml-meta .k, .tpl-maroon .ml-meta .v { text-align: left; }
+/* restrained table — no heavy fills */
+.tpl-maroon .inv-table thead th { background: transparent; color: var(--pri); border-bottom: 2px solid var(--pri); }
+.tpl-maroon .inv-table tbody tr:nth-child(even) td { background: transparent; }
+.tpl-maroon .inv-table tbody td { border-bottom: 1px solid #efe6e8; }
+.tpl-maroon .inv-totals .grand { background: var(--pri); border-radius: 4px; }
+.tpl-maroon .inv-footer { text-align: center; justify-content: center; border-top: 1.5px solid var(--pri); }
+
+/* ============================================================
+   3) CORPORATE — Left navy sidebar (two-column page)
+   ============================================================ */
+.tpl-corporate {
+  --pri: #0f3b66;
+  --gold: #c1922f;
+  flex-direction: row;
+}
+.tpl-corporate .inv-aside {
+  width: 286px;
+  flex-shrink: 0;
+  background: var(--pri);
+  color: #eaf1f8;
+  padding: 40px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.tpl-corporate .aside-logo { height: 50px; background: #fff; padding: 6px 8px; border-radius: 6px; align-self: flex-start; }
+.tpl-corporate .aside-company { font-size: 20px; font-weight: 800; color: #fff; line-height: 1.2; }
+.tpl-corporate .aside-tag { font-size: 11px; color: #9db9d6; font-style: italic; margin-top: -14px; }
+.tpl-corporate .aside-block h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin: 0 0 6px; }
+.tpl-corporate .aside-block { font-size: 12.5px; line-height: 1.7; color: #cfe0f1; }
+.tpl-corporate .aside-block strong { color: #fff; }
+.tpl-corporate .aside-due { margin-top: auto; border-top: 1px solid #2b557e; padding-top: 18px; }
+.tpl-corporate .aside-due span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9db9d6; }
+.tpl-corporate .aside-due strong { display: block; font-size: 28px; color: var(--gold); margin: 4px 0 2px; }
+.tpl-corporate .aside-due small { color: #9db9d6; }
+.tpl-corporate .inv-main { flex: 1; padding: 40px 44px; display: flex; flex-direction: column; }
+.tpl-corporate .cm-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.tpl-corporate .inv-title { color: var(--pri); }
+.tpl-corporate .inv-table thead th { background: var(--pri); }
+.tpl-corporate .inv-totals .grand { background: var(--pri); }
+.tpl-corporate .inv-totals .grand span:last-child { color: var(--gold); }
+.tpl-corporate .cm-foot { margin-top: auto; padding-top: 20px; border-top: 3px solid var(--gold); font-size: 11.5px; color: var(--muted); }
+
+/* ============================================================
+   4) MINIMAL — Airy modern, no color fills
+   ============================================================ */
+.tpl-minimal { --pri: #111827; --line: #ededed; }
+.tpl-minimal .inv-pad { padding: 56px 56px; }
+.tpl-minimal .mn-head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 26px; }
+.tpl-minimal .mn-brand { display: flex; gap: 14px; align-items: center; }
+.tpl-minimal .mn-logo { height: 42px; }
+.tpl-minimal .mn-company { font-weight: 700; font-size: 15px; }
+.tpl-minimal .mn-sub { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+.tpl-minimal .mn-title { font-size: 30px; font-weight: 300; letter-spacing: 8px; text-transform: uppercase; color: #111827; margin: 0; }
+.tpl-minimal .mn-meta { display: flex; flex-wrap: wrap; gap: 30px; padding: 22px 0; border-top: 1px solid #111827; border-bottom: 1px solid var(--line); }
+.tpl-minimal .mn-meta > div { display: flex; flex-direction: column; gap: 3px; }
+.tpl-minimal .mn-meta label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
+.tpl-minimal .mn-meta b { font-size: 13.5px; font-weight: 600; max-width: 200px; overflow-wrap: anywhere; }
+/* borderless table */
+.tpl-minimal .inv-table thead th { background: transparent; color: var(--muted); border-bottom: 1.5px solid #111827; }
+.tpl-minimal .inv-table tbody tr:nth-child(even) td { background: transparent; }
+.tpl-minimal .inv-totals .grand { background: transparent; color: #111827; border-top: 2px solid #111827; border-radius: 0; padding: 14px 0 0; }
+.tpl-minimal .inv-footer { border-top: 1px solid var(--line); }
+
+/* ============================================================
+   5) AZURE PRO — modern, decorative corners, icon footer
+   ============================================================ */
+.tpl-accent {
+  --pri: #2ba0d8;          /* azure table header */
+  --ac-blue: #2ba0d8;
+  --ac-navy: #11314f;
+  position: relative;
+  overflow: hidden;
+}
+.tpl-accent .inv-pad { position: relative; z-index: 1; padding: 46px 50px 30px; }
+
+/* decorative corner shapes (kept in the corners so they never sit under content) */
+.tpl-accent .ac-deco { position: absolute; z-index: 0; pointer-events: none; }
+.tpl-accent .ac-deco--tr  { top: -120px; right: -90px;  width: 250px; height: 250px; border-radius: 50%; background: #d7eefb; }
+.tpl-accent .ac-deco--tr2 { top: -150px; right: -140px; width: 200px; height: 200px; border-radius: 50%; background: var(--ac-blue); }
+.tpl-accent .ac-deco--bl  { bottom: 0; left: 0; width: 250px; height: 96px; }
+
+/* big logo + company name & details stacked beneath */
+.tpl-accent .ac-brand { text-align: left; }
+.tpl-accent .ac-logo { height: 118px; width: auto; display: block; margin-bottom: 12px; }
+.tpl-accent .ac-name { font-size: 22px; font-weight: 800; color: var(--ac-navy); }
+.tpl-accent .ac-details { font-size: 12px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+
+.tpl-accent .ac-info { display: flex; justify-content: space-between; gap: 30px; margin-top: 30px; }
+.tpl-accent .ac-label { font-size: 11px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+.tpl-accent .ac-client-name { font-size: 17px; font-weight: 800; color: var(--ink); margin: 4px 0 6px; }
+.tpl-accent .ac-client-lines { font-size: 12px; color: #4b5563; line-height: 1.7; }
+.tpl-accent .ac-invblock { text-align: right; }
+.tpl-accent .ac-title { font-size: 30px; font-weight: 800; color: var(--ac-blue); letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px; }
+.tpl-accent .ac-meta {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 165px);
+  gap: 3px 8px;
+  justify-content: end;
+  align-items: baseline;
+  font-size: 12px;
+}
+.tpl-accent .ac-meta .k { color: var(--muted); white-space: nowrap; text-align: right; }
+.tpl-accent .ac-meta .k::after { content: ":"; }
+.tpl-accent .ac-meta .v { text-align: left; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+
+.tpl-accent .inv-table { margin-top: 26px; }
+.tpl-accent .inv-table thead th { background: var(--ac-blue); }
+
+.tpl-accent .ac-sum { display: flex; flex-direction: column; align-items: flex-end; margin-top: 22px; }
+.tpl-accent .ac-sum-rows { width: 250px; }
+.tpl-accent .ac-sum-rows .row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.tpl-accent .ac-sum-rows .row span:first-child { color: var(--muted); }
+.tpl-accent .ac-total { margin-top: 10px; display: inline-flex; gap: 26px; align-items: center; background: linear-gradient(90deg, var(--ac-navy), var(--ac-blue)); color: #fff; padding: 12px 22px; border-radius: 4px; }
+.tpl-accent .ac-total span:first-child { text-transform: uppercase; letter-spacing: 1px; font-size: 13px; font-weight: 700; }
+.tpl-accent .ac-total span:last-child { font-size: 17px; font-weight: 800; }
+
+.tpl-accent .ac-bottom { display: flex; justify-content: space-between; gap: 40px; margin-top: 28px; }
+.tpl-accent .ac-pay { flex: 1; font-size: 12px; color: #4b5563; }
+.tpl-accent .ac-pay h4 { font-size: 12px; color: var(--ac-blue); text-transform: uppercase; letter-spacing: .5px; margin: 0 0 5px; font-weight: 700; }
+.tpl-accent .ac-pay p { margin: 0 0 14px; white-space: pre-wrap; line-height: 1.6; }
+.tpl-accent .ac-pay .inv-thanks { font-size: 13px; font-weight: 700; color: var(--ac-navy); }
+.tpl-accent .ac-bottom { align-items: flex-end; }
+.tpl-accent .ac-bottom .inv-sign { align-self: flex-end; }
+
+.tpl-accent .ac-footer { margin-top: auto; padding-top: 26px; padding-bottom: 86px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+.tpl-accent .ac-fitem { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #4b5563; line-height: 1.45; }
+.tpl-accent .ac-ficon { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--ac-blue); color: var(--ac-blue); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tpl-accent .ac-ficon .ac-fimg { width: 16px; height: 16px; display: block; }
+
+/* ---------- PDF/print exact colors ---------- */
+.invoice, .invoice * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

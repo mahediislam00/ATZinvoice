@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATZ Solution LLC — Invoice Generator</title>
+  <meta name="description" content="Professional invoice generator for ATZ Solution LLC" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/templates.css" />
+  <link rel="icon" href="images/logo.png" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="appbar">
+    <div class="appbar__brand">
+      <img src="images/logo.png" alt="ATZ Solution LLC" class="appbar__logo" onerror="this.style.display='none'" />
+      <div>
+        <h1 class="appbar__title">Invoice Generator</h1>
+        <p class="appbar__sub">ATZ Solution LLC</p>
+      </div>
+    </div>
+    <div class="appbar__actions">
+      <button class="btn btn--ghost" id="btnReset" type="button">Reset</button>
+      <button class="btn btn--ghost" id="btnPrint" type="button">Print</button>
+      <button class="btn btn--primary" id="btnPdf" type="button">Download PDF</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ FORM PANEL ============ -->
+    <section class="panel" aria-label="Invoice details">
+      <!-- Template picker -->
+      <div class="field-group">
+        <h2 class="field-group__title">Template</h2>
+        <div class="template-picker" id="templatePicker">
+          <button class="tpl-chip is-active" data-template="accent" type="button"><span class="tpl-dot tpl-dot--accent"></span>Azure · Pro</button>
+          <button class="tpl-chip" data-template="blue"   type="button"><span class="tpl-dot tpl-dot--blue"></span>Blue · Classic</button>
+          <button class="tpl-chip" data-template="maroon" type="button"><span class="tpl-dot tpl-dot--maroon"></span>Maroon · Letterhead</button>
+          <button class="tpl-chip" data-template="corporate" type="button"><span class="tpl-dot tpl-dot--corporate"></span>Corporate · Sidebar</button>
+          <button class="tpl-chip" data-template="minimal" type="button"><span class="tpl-dot tpl-dot--minimal"></span>Minimal · Modern</button>
+        </div>
+      </div>
+
+      <!-- Invoice meta -->
+      <div class="field-group">
+        <h2 class="field-group__title">Invoice Details</h2>
+        <div class="grid grid--2">
+          <label class="field">
+            <span>Invoice #</span>
+            <input type="text" id="invNumber" value="INV-1001" />
+          </label>
+          <label class="field">
+            <span>Currency</span>
+            <select id="currency">
+              <option value="$">USD ($)</option>
+              <option value="€">EUR (€)</option>
+              <option value="£">GBP (£)</option>
+              <option value="₹">INR (₹)</option>
+              <option value="C$">CAD (C$)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Issue Date</span>
+            <input type="date" id="issueDate" />
+          </label>
+          <label class="field">
+            <span>Due Date</span>
+            <input type="date" id="dueDate" />
+          </label>
+          <label class="field field--full">
+            <span>PO / Reference (optional)</span>
+            <input type="text" id="poNumber" placeholder="e.g. PO-2025-014" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Bill To -->
+      <div class="field-group">
+        <h2 class="field-group__title">Bill To</h2>
+        <div class="grid grid--2">
+          <label class="field field--full">
+            <span>Client / Company Name</span>
+            <input type="text" id="clientName" placeholder="Client company name" value="Acme Corporation" />
+          </label>
+          <label class="field field--full">
+            <span>Attention (contact person)</span>
+            <input type="text" id="clientContact" placeholder="e.g. Jane Smith" value="Jane Smith" />
+          </label>
+          <label class="field field--full">
+            <span>Address</span>
+            <textarea id="clientAddress" rows="2" placeholder="Street, City, State ZIP">123 Main Street, Springfield, IL 62701</textarea>
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="clientEmail" placeholder="client@email.com" value="jane.smith@acme.com" />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input type="text" id="clientPhone" placeholder="(000) 000-0000" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Line items -->
+      <div class="field-group">
+        <div class="field-group__head">
+          <h2 class="field-group__title">Line Items</h2>
+          <button class="btn btn--small" id="btnAddItem" type="button">+ Add Item</button>
+        </div>
+        <div class="items" id="itemsList"></div>
+      </div>
+
+      <!-- Totals config -->
+      <div class="field-group">
+        <h2 class="field-group__title">Adjustments</h2>
+        <div class="grid grid--2">
+          <label class="field">
+            <span>Tax rate (%)</span>
+            <input type="number" id="taxRate" value="0" min="0" step="0.01" />
+          </label>
+          <label class="field">
+            <span>Discount</span>
+            <input type="number" id="discount" value="0" min="0" step="0.01" />
+          </label>
+          <label class="field">
+            <span>Discount type</span>
+            <select id="discountType">
+              <option value="amount">Fixed amount</option>
+              <option value="percent">Percent (%)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Shipping / Other</span>
+            <input type="number" id="shipping" value="0" min="0" step="0.01" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Signature -->
+      <div class="field-group">
+        <div class="field-group__head">
+          <h2 class="field-group__title">Signature</h2>
+          <label class="switch"><input type="checkbox" id="sigEnabled" checked /><span>Show section</span></label>
+        </div>
+        <div id="sigControls">
+          <div class="grid grid--2">
+            <label class="field">
+              <span>Signed by (name)</span>
+              <input type="text" id="signName" placeholder="e.g. Robert Smith" />
+            </label>
+            <label class="field">
+              <span>Title / label</span>
+              <input type="text" id="signTitle" placeholder="Authorized Signature" />
+            </label>
+          </div>
+          <div class="sig-field" style="margin-top:12px">
+            <label class="sig-upload-btn">Upload image
+              <input type="file" id="sigInput" accept="image/*" hidden />
+            </label>
+            <button type="button" id="sigRemove" class="sig-remove-btn" style="display:none">Remove image</button>
+          </div>
+          <img id="sigPreview" class="sig-preview" alt="signature preview" style="display:none" />
+          <p class="field-hint">Add a signature image and/or a typed name &amp; title. Uncheck “Show section” to omit signatures entirely. Applies to all templates.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PREVIEW PANEL ============ -->
+    <section class="preview-wrap" aria-label="Invoice preview">
+      <div class="preview-scroll">
+        <div class="invoice" id="invoice"><!-- rendered by JS --></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="js/logo-data.js"></script>
+  <script src="js/company.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
